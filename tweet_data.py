@@ -12,6 +12,7 @@ date_since = "2019-01-01"
 date_until = "2020-10-23"
 tweet_number = 10000
 
+
 def get_tweet(consumer_key, consumer_secret, access_token, access_token_secret, search_words, date_since, date_until,tweet_number):
     ## connect to twitter API
     auth = tw.OAuthHandler(consumer_key, consumer_secret)
@@ -22,8 +23,6 @@ def get_tweet(consumer_key, consumer_secret, access_token, access_token_secret, 
             break
         except:
             continue
-
-
     # Collect tweets
     tweets = tw.Cursor(api.search,
                        q=search_words,
@@ -32,7 +31,6 @@ def get_tweet(consumer_key, consumer_secret, access_token, access_token_secret, 
                        since=date_since).items(tweet_number)
   
     tweets_list = [[tweet.created_at, tweet.text, tweet.user.screen_name, tweet.user.location] for tweet in tweets]
-    
     tweets_data = pd.DataFrame(data=tweets_list, columns=['created_time', 'tweet_text', 'user', "location"])
 
     return tweets_data
