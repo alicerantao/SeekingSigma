@@ -37,12 +37,12 @@ class gtrend(extract):
         sd = datetime.strptime(self.start, "%Y-%m-%d").date()
         ed = datetime.strptime(self.end, "%Y-%m-%d").date()
         df_trend = df_trend[(df_trend['GT_date'].dt.date>=sd)&(df_trend['GT_date'].dt.date<=ed)]
-        data_trend = df_trend[['GT_date', '{}'.format(keyword)]]
+        data_trend = df_trend[['GT_date', '{}'.format(self.keyword)]]
         return data_trend
 
 class yahoo(extract):
     def __init__(self, keyword:str, start:str, end:str) -> None:
-        self.ticker = ticker
+        self.ticker = keyword
         super().__init__(start, end)
 
     def collect_data(self):
