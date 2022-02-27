@@ -1,16 +1,26 @@
 import pandas as pd
 import numpy as np
 import fbprophet
-from fbprophet import Prophet
+from prophet import Prophet
 
 
-class prophet_model:
+class MLProphet:
     def __init__(self, data, feature, label):
         self.data = data
         self.feature = feature
         self.label = label
         self.df = self.data_prepare()
     def data_prepare(self):
+        '''Prepare data in the prophet model training format.
+
+        Args:
+            data: (pd.DataFrame) Training dataset or testing dataset.
+            feature: (list) List of individual independent variables used for prediction.
+            label: (list) The variable we need to predict.
+        
+        Returns:
+            The processed dataframe.
+        '''
         if self.data is None:
             pass
         elif len(self.feature) >= 1:
@@ -32,7 +42,16 @@ class prophet_model:
             df = self.data[self.label].reset_index()
             df.columns = ['ds', 'y']
             return df
+
     def model_fit(self):
+        '''Train prophet model with processed data.
+
+        Args:
+            feature: (list) List of individual independent variables used for prediction.
+
+        Returns:
+            The fitted prophet estimator.
+        '''
         if len(self.feature) > 1:
             m = Prophet()
             for f in self.feature:
@@ -43,7 +62,17 @@ class prophet_model:
             m = Prophet()
             m.fit(self.df)
             return m
+
     def model_predict(self, model, window=None):
+        '''Generate prediction using the passed estimator
+
+        Args:
+            model: (object) The fitted prophet estimator.
+            window: (int) The number of days for prediction.
+        
+        Returns:
+            The dataframe with forecast.
+        '''
         if len(self.feature) >= 1:
             if self.label:
                 y_true = self.df['y']

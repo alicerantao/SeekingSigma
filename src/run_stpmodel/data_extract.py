@@ -7,7 +7,18 @@ from datetime import timedelta, date
 from datetime import datetime
 
 class extract(ABC):
+    '''Interface for data extraction.
+
+    The class serves as an Interface of data extraction for
+    different data sources.
+
+    Attributes:
+        start: The start date of the extracted data.
+        end: The end date of the extracted data.
+    '''
+
     def __init__(self, start:str, end:str) -> None:
+        '''Inits base class with start and end date'''
         self.start = start
         self.end = end
     def connect_API(self) -> None: pass
@@ -15,15 +26,37 @@ class extract(ABC):
     def collect_data(self): pass
 
 class gtrend(extract):
+    '''Google trend data extraction.
+
+    The class connects to Google trend API for data download
+    and returns the processed data in DataFrame.
+
+    Attributes:
+        keyword: (str) The word of interest for trend data download.
+        start: (str) The start date of extracted data.
+        end: (str) The end date of extracted data.
+    '''
+
     def __init__(self, keyword:str, start:str, end:str) -> None:
         self.keyword = keyword
         super().__init__(start, end)
         self.connect_API()
-        
+      
     def connect_API(self):
+        '''Connect to Google trend API'''
         self.pytrend = TrendReq()
 
     def collect_data(self):
+        '''Download data and process data.
+
+        Args:
+            keyword: (str) The word of interest for trend data download.
+            start: (str) The start date of extracted data.
+            end: (str) The end date of extracted data.
+
+        Returns:
+            The processed dataframe.
+        '''
         self.pytrend.build_payload(kw_list=['{}'.format(self.keyword)])
         data = self.pytrend.interest_over_time().reset_index()
         df = data[['date', '{}'.format(self.keyword)]]
@@ -39,10 +72,31 @@ class gtrend(extract):
         return data_trend
 
 class yahoo(extract):
+    '''Yahoo finance data extraction.
+
+    The class connects to Yahoo Finance for data download
+    and returns the processed data in DataFrame.
+
+    Attributes:
+        ticker: (str) The ticker of stock for data download.
+        start: (str) The start date of extracted data.
+        end: (str) The end date of extracted data.
+    '''
+
     def __init__(self, ticker:str, start:str, end:str) -> None:
         self.ticker = ticker
         super().__init__(start, end)
 
     def collect_data(self):
+        '''Download data and process data
+
+        Args:
+            ticker: (str) The ticker of stock for data download.
+            start: (str) The start date of extracted data.
+            end: (str) The end date of extracted data.
+        
+        Returns:
+            The processed dataframe.
+        '''
         data = yf.download(self.ticker, start=self.start, end=self.end)
         return data
