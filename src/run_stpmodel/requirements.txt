@@ -1,0 +1,7 @@
+pytrends==4.7.3
+yfinance==0.1.67
+pystan==2.19.1.1
+prophet
+scikit-learn
+pandas
+numpy
