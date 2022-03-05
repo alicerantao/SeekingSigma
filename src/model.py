@@ -51,7 +51,7 @@ class MLProphet:
         self.model.fit(self.df)
         return
 
-    def model_predict(self, data,  window=None):
+    def model_predict(self, data=None,  window=None):
         """
         Generate prediction using the passed estimator
 
