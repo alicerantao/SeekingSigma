@@ -36,7 +36,10 @@ class MLProphet:
                 df = df[select_col]
                 return df    
         elif len(self.feature) < 1 and self.label:
+            data['y'] = data[self.label].shift(periods=-1)
             df = data[self.label].reset_index()
+            df = df.dropna()
+            df.rename(columns={'Date': 'ds'}, inplace=True)
             df.columns = ['ds', 'y']
             return df
 

@@ -9,7 +9,8 @@ import datetime as dt
 TICKER = os.environ.get("TICKER", "msft")
 FEATURES = os.environ.get("FEATURES", 'High,Low,Close,Adj Close,Volume').split(",")
 LABEL = os.environ.get("LABEL", "Open")
-CURRENT_DATE = os.environ.get("CURRENT_DATE", datetime.today().strftime("%Y-%m-%d"))
+# CURRENT_DATE = os.environ.get("CURRENT_DATE", datetime.today().strftime("%Y-%m-%d"))
+CURRENT_DATE = "2022-01-03"
 WINDOW = os.environ.get("WINDOW", 1)
 
 
@@ -19,7 +20,7 @@ if __name__ == '__main__':
     train_start = (datetime.strptime(CURRENT_DATE, "%Y-%m-%d").date() - dt.timedelta(365)).strftime("%Y-%m-%d")
     train_end = CURRENT_DATE
     pred_start = train_end
-    pred_end = (datetime.strptime(CURRENT_DATE, "%Y-%m-%d").date() + dt.timedelta(WINDOW+5)).strftime("%Y-%m-%d")
+    pred_end = (datetime.strptime(CURRENT_DATE, "%Y-%m-%d").date() + dt.timedelta(WINDOW+1)).strftime("%Y-%m-%d")
 
     yh_train = yahoo(TICKER, train_start, train_end)
     data_yh_train = yh_train.collect_data()
