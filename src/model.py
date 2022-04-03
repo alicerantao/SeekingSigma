@@ -2,13 +2,13 @@ from prophet import Prophet
 
 
 class MLProphet:
-    def __init__(self, data, feature, label):
-        self.feature = feature
+    def __init__(self, data, features, label):
+        self.features = features
         self.label = label
         self.df = self.data_prepare(data)
         self.model = None
 
-    def data_prepare(self, data):
+    def data_prepare(self, data, predict=False):
         """
         Prepare data in the prophet model training format.
 
@@ -20,25 +20,26 @@ class MLProphet:
         """
         if data is None:
             pass
-        elif len(self.feature) >= 1:
+        elif len(self.features) >= 1:
+            # TODO: Check if data has the label.
             if self.label:
                 data['y']=data[self.label].shift(periods=-1)
                 df = data.reset_index()
-                df = df.dropna()
+                df = df.dropna() if not predict else df
                 df.rename(columns={'Date': 'ds'}, inplace=True)
-                select_col = ['ds'] + self.feature + ['y']
+                select_col = ['ds'] + self.features + ['y']
                 df = df[select_col]
                 return df
             else:
                 df = data.reset_index()
                 df.rename(columns={'Date': 'ds'}, inplace=True)
-                select_col = ['ds'] + self.feature
+                select_col = ['ds'] + self.features
                 df = df[select_col]
                 return df    
-        elif len(self.feature) < 1 and self.label:
+        elif len(self.features) < 1 and self.label:
             data['y'] = data[self.label].shift(periods=-1)
             df = data[self.label].reset_index()
-            df = df.dropna()
+            df = df.dropna() if not predict else df
             df.rename(columns={'Date': 'ds'}, inplace=True)
             df.columns = ['ds', 'y']
             return df
@@ -48,8 +49,8 @@ class MLProphet:
         Train prophet model with processed data.
         """
         self.model = Prophet()
-        if len(self.feature) > 1:
-            for f in self.feature:
+        if len(self.features) > 1:
+            for f in self.features:
                 self.model.add_regressor(f)
         self.model.fit(self.df)
         return
@@ -65,8 +66,8 @@ class MLProphet:
         Returns:
             The dataframe with forecast.
         """
-        df = self.data_prepare(data)
-        if len(self.feature) >= 1:
+        df = self.data_prepare(data, True)
+        if len(self.features) >= 1:
             if self.label:
                 y_true = df['y']
                 df_pred = df.drop(columns=['y'])
