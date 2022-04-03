@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3.8
 
 ARG APPLICATION_NAME=${APPLICATION_NAME}
 ARG REQUIREMENTS=${REQUIREMENTS}
@@ -14,4 +14,4 @@ RUN cd /run
 COPY ${REQUIREMENTS} requirements.txt
 RUN pip3 install -r requirements.txt
 
-ENTRYPOINT [ "python3", "src/run.py" ]
+ENTRYPOINT [ "python3", "run.py" ]

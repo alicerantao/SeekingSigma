@@ -6,12 +6,12 @@ from datetime import datetime
 import datetime as dt
 
 
-TICKER = os.environ.get("TICKER", "msft")
+TICKER = os.environ.get("TICKER", "tsla")
 FEATURES = os.environ.get("FEATURES", 'High,Low,Close,Adj Close,Volume').split(",")
 LABEL = os.environ.get("LABEL", "Open")
 # CURRENT_DATE = os.environ.get("CURRENT_DATE", datetime.today().strftime("%Y-%m-%d"))
 CURRENT_DATE = "2022-01-03"
-WINDOW = os.environ.get("WINDOW", 1)
+WINDOW = os.environ.get("WINDOW", 60)
 
 
 if __name__ == '__main__':
@@ -32,6 +32,6 @@ if __name__ == '__main__':
     train.model_fit()
 
     forecast = train.model_predict(data_yh_pred, window=WINDOW)
-    print(" Predicted price for " + TICKER + " starting from " + pred_start + " for " + str(WINDOW) + " day is \n")
-    print(forecast)
+    # print(" Predicted price for " + TICKER + " starting from " + pred_start + " for " + str(WINDOW) + " day is \n")
+    # print(forecast)
     print(r2_score(forecast.y_true, forecast.yhat))
