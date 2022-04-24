@@ -1,0 +1,15 @@
+version: "3.4"
+
+services:
+  service:
+    build:
+      dockerfile: "./docker/core.dockerfile"
+      context: "."
+      args:
+        - APPLICATION_NAME=seeking-sigma
+        - REQUIREMENTS=./requirements.txt
+    image: "seeking-sigma"
+    ports:
+      - 8080:8080
+    volumes:
+      - "./:/run"
