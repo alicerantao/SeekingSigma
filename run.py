@@ -13,8 +13,7 @@ LABEL = os.environ.get("LABEL", "Open")
 CURRENT_DATE = "2022-01-03"
 WINDOW = os.environ.get("WINDOW", 1)
 
-
-if __name__ == '__main__':
+def main():
     start_date = (datetime.strptime(CURRENT_DATE, "%Y-%m-%d").date() - dt.timedelta(365)).strftime("%Y-%m-%d")
 
     train_start = (datetime.strptime(CURRENT_DATE, "%Y-%m-%d").date() - dt.timedelta(365)).strftime("%Y-%m-%d")
@@ -35,3 +34,6 @@ if __name__ == '__main__':
     print(" Predicted price for " + TICKER + " starting from " + pred_start + " for " + str(WINDOW) + " day is \n")
     print(forecast)
     print(r2_score(forecast.y_true, forecast.yhat))
+
+if __name__ == '__main__':
+    main()
