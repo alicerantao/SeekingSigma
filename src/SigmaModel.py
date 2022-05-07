@@ -45,23 +45,25 @@ class SigmaModel:
         yh_pred = yahoo(self.ticker, pred_start, self.current_date)
         return yh_pred.collect_data()
 
-    def model_predict(self, future_data, date):
+    def model_predict(self, future_data):
         forecast = self.model.model_predict(future_data)
-        print("open model \n")
-        print("For " + date + " forecast is \n")
-        print(forecast)
-        print(future_data)
-        print("\n")
+        # print("open model \n")
+        # print("For " + date + " forecast is \n")
+        # print(forecast)
+        # print(future_data)
+        # print("\n")
         return forecast
 
     def predict(self, window):
 
-        print(" Predicted price for " + self.ticker + " starting from " + self.current_date + " for " + str(window) + " day is \n")
+        # print(" Predicted price for " + self.ticker + " starting from " + self.current_date + " for " + str(window) + " day is \n")
 
+        predictions = pd.DataFrame()
         data_yh_pred = self.__get_predict_data()
 
         current_date = self.current_date
-        forecast = self.model_predict(data_yh_pred, current_date)
+        forecast = self.model_predict(data_yh_pred)
+        predictions[current_date] = forecast.iloc[[0]][['yhat']]
         while window > 1:
             future = pd.DataFrame()
             future['Open'] = forecast.iloc[[0]]['yhat']
@@ -83,8 +85,12 @@ class SigmaModel:
             future['Date'] = current_date
             future.set_index("Date")
             next_date = (datetime.strptime(current_date, "%Y-%m-%d").date() + dt.timedelta(1)).strftime("%Y-%m-%d")
-            forecast = self.model_predict(future, next_date)
+            forecast = self.model_predict(future)
             window = window-1
             current_date = next_date
             data_yh_pred = future
+            predictions[current_date] = forecast.iloc[[0]][['yhat']]
+
+        predictions.reset_index()
+        return predictions.to_dict()
 

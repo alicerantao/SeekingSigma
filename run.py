@@ -13,4 +13,6 @@ WINDOW = os.environ.get("WINDOW", 3)
 if __name__ == '__main__':
 
     model = SigmaModel(TICKER, CURRENT_DATE)
-    model.predict(WINDOW)
+    predictions = model.predict(WINDOW)
+
+    print(predictions)
