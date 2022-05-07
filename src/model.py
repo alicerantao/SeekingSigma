@@ -60,31 +60,21 @@ class MLProphet:
         Generate prediction using the passed estimator
 
         Args:
-            data: (object) The test data.
+            data: (object) The test data should be provided when using additional features.
             window: (int) The number of days for prediction.
         
         Returns:
             The dataframe with forecast.
         """
-        df = self.data_prepare(data, True)
-        if len(self.features) >= 1:
-            if self.label:
-                y_true = df['y']
-                df_pred = df.drop(columns=['y'])
-                forecast = self.model.predict(df_pred)
-                forecast['y_true'] = y_true
-                return forecast
-            else:
-                forecast = self.model.predict(df)
-                return forecast
+        if data is not None:
+            df = self.data_prepare(data, True)
+            y_true = df['y']
+            df_pred = df.drop(columns=['y'])
+            forecast = self.model.predict(df_pred)
+            forecast['y_true'] = y_true
+            return forecast
         elif window is not None:
             future = self.model.make_future_dataframe(periods=window)
             forecast = self.model.predict(future)
-            if self.label and data:
-                f = df.merge(forecast, how='left', left_on='ds', right_on='ds')
-                y_true = df['y']
-                f['y_true'] = y_true
-                return f
-            else:
-                f = forecast.tail(window+1)
-                return f
+            f = forecast.tail(window)
+            return f
