@@ -1,18 +1,21 @@
+import datetime as dt
 import os
 from datetime import datetime
-import datetime as dt
-from src.data_extract import yahoo
-from src.model import MLProphet
 
 import pandas as pd
 
+from src.data_extract import yahoo
+from src.model import MLProphet
+
 
 class SigmaModel:
-    FEATURES = 'Open,High,Low,Close,Adj Close,Volume'.split(",")
+    FEATURES = "Open,High,Low,Close,Adj Close,Volume".split(",")
     LABEL = os.environ.get("LABEL", "Open")
 
     def __init__(self, ticker, current_date):
-        train_start = (datetime.strptime(current_date, "%Y-%m-%d").date() - dt.timedelta(365)).strftime("%Y-%m-%d")
+        train_start = (
+            datetime.strptime(current_date, "%Y-%m-%d").date() - dt.timedelta(365)
+        ).strftime("%Y-%m-%d")
         train_end = current_date
 
         self.current_date = current_date
@@ -24,7 +27,7 @@ class SigmaModel:
         self.model = MLProphet(data_yh_train, self.FEATURES, self.LABEL)
         self.model.model_fit()
 
-        self.high_model = MLProphet(data_yh_train, self.FEATURES, 'High')
+        self.high_model = MLProphet(data_yh_train, self.FEATURES, "High")
         self.high_model.model_fit()
 
         self.low_model = MLProphet(data_yh_train, self.FEATURES, "Low")
@@ -40,7 +43,9 @@ class SigmaModel:
         self.volume_model.model_fit()
 
     def __get_predict_data(self):
-        pred_start = (datetime.strptime(self.current_date, "%Y-%m-%d").date() - dt.timedelta(1)).strftime("%Y-%m-%d")
+        pred_start = (
+            datetime.strptime(self.current_date, "%Y-%m-%d").date() - dt.timedelta(1)
+        ).strftime("%Y-%m-%d")
         # (current_date-1, current_date)
         yh_pred = yahoo(self.ticker, pred_start, self.current_date)
         return yh_pred.collect_data()
@@ -51,34 +56,35 @@ class SigmaModel:
 
         current_date = self.current_date
         forecast = self.model.model_predict(data_yh_pred)
-        predictions[current_date] = forecast.iloc[[0]][['yhat']]
+        predictions[current_date] = forecast.iloc[[0]][["yhat"]]
         while window > 1:
             future = pd.DataFrame()
-            future['Open'] = forecast.iloc[[0]]['yhat']
+            future["Open"] = forecast.iloc[[0]]["yhat"]
             forecast = self.high_model.model_predict(data=data_yh_pred)
-            future['High'] = forecast.reset_index().iloc[[0]]['yhat']
+            future["High"] = forecast.reset_index().iloc[[0]]["yhat"]
             # print(forecast)
             forecast = self.low_model.model_predict(data=data_yh_pred)
-            future['Low'] = forecast.reset_index().iloc[[0]]['yhat']
+            future["Low"] = forecast.reset_index().iloc[[0]]["yhat"]
             # print(forecast)
             forecast = self.close_model.model_predict(data=data_yh_pred)
-            future['Close'] = forecast.reset_index().iloc[[0]]['yhat']
+            future["Close"] = forecast.reset_index().iloc[[0]]["yhat"]
             # print(forecast)
             forecast = self.adj_close_model.model_predict(data=data_yh_pred)
-            future['Adj Close'] = forecast.reset_index().iloc[[0]]['yhat']
+            future["Adj Close"] = forecast.reset_index().iloc[[0]]["yhat"]
             # print(forecast)
             forecast = self.volume_model.model_predict(data=data_yh_pred)
-            future['Volume'] = forecast.reset_index().iloc[[0]]['yhat']
+            future["Volume"] = forecast.reset_index().iloc[[0]]["yhat"]
             # print(forecast)
-            future['Date'] = current_date
+            future["Date"] = current_date
             future.set_index("Date")
-            next_date = (datetime.strptime(current_date, "%Y-%m-%d").date() + dt.timedelta(1)).strftime("%Y-%m-%d")
+            next_date = (
+                datetime.strptime(current_date, "%Y-%m-%d").date() + dt.timedelta(1)
+            ).strftime("%Y-%m-%d")
             forecast = self.self.model.model_predict(future)
-            window = window-1
+            window = window - 1
             current_date = next_date
             data_yh_pred = future
-            predictions[current_date] = forecast.iloc[[0]][['yhat']]
+            predictions[current_date] = forecast.iloc[[0]][["yhat"]]
 
         predictions.reset_index()
         return predictions.to_dict()
-

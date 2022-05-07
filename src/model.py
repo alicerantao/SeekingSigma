@@ -23,25 +23,25 @@ class MLProphet:
         elif len(self.features) >= 1:
             # TODO: Check if data has the label.
             if self.label:
-                data['y']=data[self.label].shift(periods=-1)
+                data["y"] = data[self.label].shift(periods=-1)
                 df = data.reset_index()
                 df = df.dropna() if not predict else df
-                df.rename(columns={'Date': 'ds'}, inplace=True)
-                select_col = ['ds'] + self.features + ['y']
+                df.rename(columns={"Date": "ds"}, inplace=True)
+                select_col = ["ds"] + self.features + ["y"]
                 df = df[select_col]
                 return df
             else:
                 df = data.reset_index()
-                df.rename(columns={'Date': 'ds'}, inplace=True)
-                select_col = ['ds'] + self.features
+                df.rename(columns={"Date": "ds"}, inplace=True)
+                select_col = ["ds"] + self.features
                 df = df[select_col]
-                return df    
+                return df
         elif len(self.features) < 1 and self.label:
-            data['y'] = data[self.label].shift(periods=-1)
+            data["y"] = data[self.label].shift(periods=-1)
             df = data[self.label].reset_index()
             df = df.dropna() if not predict else df
-            df.rename(columns={'Date': 'ds'}, inplace=True)
-            df.columns = ['ds', 'y']
+            df.rename(columns={"Date": "ds"}, inplace=True)
+            df.columns = ["ds", "y"]
             return df
 
     def model_fit(self) -> None:
@@ -55,23 +55,23 @@ class MLProphet:
         self.model.fit(self.df)
         return
 
-    def model_predict(self, data=None,  window=None):
+    def model_predict(self, data=None, window=None):
         """
         Generate prediction using the passed estimator
 
         Args:
             data: (object) The test data should be provided when using additional features.
             window: (int) The number of days for prediction.
-        
+
         Returns:
             The dataframe with forecast.
         """
         if data is not None:
             df = self.data_prepare(data, True)
-            y_true = df['y']
-            df_pred = df.drop(columns=['y'])
+            y_true = df["y"]
+            df_pred = df.drop(columns=["y"])
             forecast = self.model.predict(df_pred)
-            forecast['y_true'] = y_true
+            forecast["y_true"] = y_true
             return forecast
         elif window is not None:
             future = self.model.make_future_dataframe(periods=window)
