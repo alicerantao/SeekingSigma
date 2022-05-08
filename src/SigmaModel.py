@@ -60,27 +60,27 @@ class SigmaModel:
         while window > 1:
             future = pd.DataFrame()
             future["Open"] = forecast.iloc[[0]]["yhat"]
-            forecast = self.high_model.model_predict(data=data_yh_pred)
-            future["High"] = forecast.reset_index().iloc[[0]]["yhat"]
+            high_forecast = self.high_model.model_predict(data=data_yh_pred)
+            future["High"] = high_forecast.reset_index().iloc[[0]]["yhat"]
             # print(forecast)
-            forecast = self.low_model.model_predict(data=data_yh_pred)
-            future["Low"] = forecast.reset_index().iloc[[0]]["yhat"]
+            low_forecast = self.low_model.model_predict(data=data_yh_pred)
+            future["Low"] = low_forecast.reset_index().iloc[[0]]["yhat"]
             # print(forecast)
-            forecast = self.close_model.model_predict(data=data_yh_pred)
-            future["Close"] = forecast.reset_index().iloc[[0]]["yhat"]
+            close_forecast = self.close_model.model_predict(data=data_yh_pred)
+            future["Close"] = close_forecast.reset_index().iloc[[0]]["yhat"]
             # print(forecast)
-            forecast = self.adj_close_model.model_predict(data=data_yh_pred)
-            future["Adj Close"] = forecast.reset_index().iloc[[0]]["yhat"]
+            adj_close_forecast = self.adj_close_model.model_predict(data=data_yh_pred)
+            future["Adj Close"] = adj_close_forecast.reset_index().iloc[[0]]["yhat"]
             # print(forecast)
-            forecast = self.volume_model.model_predict(data=data_yh_pred)
-            future["Volume"] = forecast.reset_index().iloc[[0]]["yhat"]
+            volume_forecast = self.volume_model.model_predict(data=data_yh_pred)
+            future["Volume"] = volume_forecast.reset_index().iloc[[0]]["yhat"]
             # print(forecast)
             future["Date"] = current_date
             future.set_index("Date")
             next_date = (
                 datetime.strptime(current_date, "%Y-%m-%d").date() + dt.timedelta(1)
             ).strftime("%Y-%m-%d")
-            forecast = self.self.model.model_predict(future)
+            forecast = self.model.model_predict(future)
             window = window - 1
             current_date = next_date
             data_yh_pred = future
