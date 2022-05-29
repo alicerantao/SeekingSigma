@@ -15,3 +15,4 @@ COPY ${REQUIREMENTS} requirements.txt
 RUN pip3 install -r requirements.txt
 
 ENTRYPOINT [ "python3", "run.py" ]
+# CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
